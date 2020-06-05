@@ -25,7 +25,7 @@
         {
             var orders = new List<OrderDto>();
 
-            for (var j = 1; j <= 5; j++)
+            for (var j = 1; j <= 500; j++)
             {
                 orders.Add(new OrderDto { Id = Guid.NewGuid(), ProductName = $"Product_{i}_{j}", RowNumber = j, Attr1 = "Attr1", Attr2 = "Attr2", Attr3 = "Attr3", Attr4 = "Attr4", Attr5 = "Attr5", Attr6 = DateTime.Now, Attr7 = DateTime.Now });
             }
