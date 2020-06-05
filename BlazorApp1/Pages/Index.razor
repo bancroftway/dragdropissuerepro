@@ -1,0 +1,61 @@
+﻿@page "/"
+@using BlazorApp1.Models
+
+<select class="form-control" id="ddlRig" @onchange="HandleCustomerSelection">
+    <option value="">Select Customer</option>
+    @if (Customers != null && Customers.Any())
+    {
+        @foreach (var customer in Customers)
+        {
+            <option value="@customer.Id">@customer.Name</option>
+        }
+    }
+</select>
+
+<OrdersCmp Orders="SelectedCustomerOrders"></OrdersCmp>
+
+
+@code {
+    private List<CustomerDto> Customers { get; set; } = new List<CustomerDto>();
+    private List<OrderDto> SelectedCustomerOrders => SelectedCustomerId.HasValue ? Customers.Single(x => x.Id == SelectedCustomerId)?.Orders?.ToList() : null;
+    private Guid? SelectedCustomerId { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        for (var i = 1; i <= 5; i++)
+        {
+            var orders = new List<OrderDto>();
+
+            for (var j = 1; j <= 5; j++)
+            {
+                orders.Add(new OrderDto { Id = Guid.NewGuid(), ProductName = $"Product_{i}_{j}", RowNumber = j, Attr1 = "Attr1", Attr2 = "Attr2", Attr3 = "Attr3", Attr4 = "Attr4", Attr5 = "Attr5", Attr6 = DateTime.Now, Attr7 = DateTime.Now });
+            }
+
+            Customers.Add(
+                new CustomerDto
+                {
+                    Id = Guid.NewGuid(),
+                    Name = $"Customer #{i}",
+                    Attr1 = "Attr1",
+                    Attr2 = "Attr2",
+                    Attr3 = "Attr3",
+                    Attr4 = "Attr4",
+                    Attr5 = "Attr5",
+                    Attr6 = DateTime.Now,
+                    Attr7 = DateTime.Now,
+                    Orders = orders
+                }
+            );
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task HandleCustomerSelection(ChangeEventArgs e)
+    {
+        if (e.Value != null && !string.IsNullOrEmpty(e.Value.ToString()))
+        {
+            SelectedCustomerId = new Guid(e.Value.ToString());
+            StateHasChanged();
+        }
+    }
+}

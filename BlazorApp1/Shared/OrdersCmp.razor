@@ -1,0 +1,52 @@
+﻿@using BlazorApp1.Models
+@inject DragDropService DragDropService
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-1"><strong>#</strong></div>
+        <div class="col-8"><strong>Product</strong></div>
+    </div>
+    <Dropzone Name="dZone">
+        @if (this.Orders != null && this.Orders.Any())
+        {
+            @foreach (var order in this.Orders.OrderBy(x => x.RowNumber))
+            {
+                <Draggable OnDrop="@(async (x) => await OnDrop(x))" Tag="order" @key="order.Id">
+                    <div class="row">
+                        <div class="col-1 list-group-item">@order.RowNumber</div>
+                        <div class="col-8 list-group-item">@order.ProductName</div>
+                        <div class="col-3 list-group-item">
+                            <button class="btn btn-primary" type="button">
+                                Do Something
+                            </button>
+                        </div>
+                    </div>
+                </Draggable>
+            }
+        }
+    </Dropzone>
+</div>
+
+@code {
+    [Parameter]
+    public List<OrderDto> Orders { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        //DragDropService.ClearDropzone("dZone");
+        return base.OnParametersSetAsync();
+    }
+
+    public async Task OnDrop(DraggableItem item)
+    {
+        var order = item.Tag as OrderDto;
+
+        Orders.Remove(order);
+        Orders.Insert(item.OrderPosition, order);
+
+        foreach (var i in Orders)
+        {
+            i.RowNumber = Orders.IndexOf(i) + 1;
+        }
+    }
+}
